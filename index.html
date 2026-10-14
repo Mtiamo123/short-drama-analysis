@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YouTube 热门短剧编剧特征 × 传播热度 · 交互式可视化</title>
+<link rel="stylesheet" href="style.css" />
+<script src="echarts.min.js"></script>
+<script>
+  /* 本地 echarts.min.js 缺失时的降级回退：按序尝试国内/境外 CDN */
+  (function () {
+    if (typeof echarts !== 'undefined') return;
+    var urls = [
+      'https://cdn.bootcdn.net/ajax/libs/echarts/5.5.0/echarts.min.js',
+      'https://cdn.staticfile.org/echarts/5.5.0/echarts.min.js',
+      'https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js',
+      'https://unpkg.com/echarts@5.5.0/dist/echarts.min.js'
+    ];
+    var i = 0;
+    function next() {
+      if (i >= urls.length) return;
+      var s = document.createElement('script');
+      s.src = urls[i++];
+      s.onerror = next;
+      document.head.appendChild(s);
+    }
+    next();
+  })();
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-title">短剧编剧特征 × 传播热度</span>
+      <span class="brand-sub">观测性相关性分析 · n=50 · 信号词为启发式词库</span>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ 模块 1：筛选 · 时空分布 · 剧集档案 ============ -->
+  <section class="module" id="m1">
+    <h2 class="section-title"><span class="sec-num">01</span>筛选 · 时空分布 · 剧集档案</h2>
+    <p class="module-sub">用一个筛选框驱动全部图表：按 <b>发布时间</b>、<b>语言</b>、<b>热度分组</b>、<b>剧名</b> 筛选后，本页趋势图、语言对比、档案明细表以及后续的散点图 / 箱线图 / 雷达图 / 排序表会<b>实时联动</b>；第 02–07 模块为 n=50 全样本统计基线，不随筛选变化。</p>
+
+    <div class="filters card">
+      <div class="filter-status" id="filter-status"></div>
+      <div class="filter-row">
+        <label class="f-item">发布时间
+          <span class="range-row">
+            <select id="f-month-start"></select><span class="sep">–</span><select id="f-month-end"></select>
+          </span>
+        </label>
+        <fieldset class="f-field multi">
+          <legend>语言</legend>
+          <label><input type="checkbox" class="f-lang" value="英文" checked> 英文</label>
+          <label><input type="checkbox" class="f-lang" value="中文" checked> 中文</label>
+        </fieldset>
+        <label class="f-item">热度分组
+          <select id="f-heat">
+            <option value="all">全部</option>
+            <option value="高">高热度组</option>
+            <option value="中">中热度组</option>
+            <option value="低">低热度组</option>
+          </select>
+        </label>
+        <label class="f-item">剧名搜索
+          <input type="text" id="f-kw" placeholder="输入剧名关键词…" />
+        </label>
+        <div class="f-actions">
+          <button id="f-reset" class="btn ghost">重置</button>
+          <button id="f-apply" class="btn primary">更新</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+    <div class="active-filters" id="active-filters"></div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>发布时间趋势</h3><span class="unit">按月统计剧集数量 · 高 / 中 / 低热度分组</span></div>
+        <div class="chart" id="c_time_trend" style="height:340px"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>语言对比</h3><span class="unit">英文 / 中文 · 平均综合热度与平均点赞数 · 点击柱子筛选语言</span></div>
+        <div class="chart" id="c_lang_compare" style="height:340px"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-toolbar">
+        <span id="arch-count" class="muted"></span>
+        <span class="hint">点击表头排序 · 点击行查看短剧详情</span>
+      </div>
+      <div class="table-scroll tall"><table class="tbl sortable" id="tbl_archive"></table></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 2：核心结论数字卡与排序图 ============ -->
+  <section class="module" id="m2">
+    <h2 class="section-title"><span class="sec-num">02</span>核心结论</h2>
+    <div class="kpis" id="kpis2"></div>
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>冲突密度分档 · 综合热度均值排序</h3><span class="unit">单位：综合传播热度</span></div>
+        <div class="chart" id="c_bin_rank" style="height:280px"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>显著信号词 · p 值排序</h3><span class="unit">单位：Spearman p（虚线为 0.05 阈值）</span></div>
+        <div class="chart" id="c_sig_words" style="height:280px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 3：数值特征相关性 ============ -->
+  <section class="module" id="m3">
+    <h2 class="section-title"><span class="sec-num">03</span>数值特征相关性</h2>
+    <div class="card">
+      <div class="card-head"><h3>图表 1 · 13 项数值特征与综合热度 Spearman ρ</h3><span class="unit">按 |ρ| 降序 · 红=正相关 · 蓝=负相关</span></div>
+      <div class="chart" id="c_feat_rho" style="height:520px"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>图表 2 · 相关性热力图</h3><span class="unit">特征 × 热度分量 / 特征两两 · Spearman ρ</span></div>
+      <div class="chart" id="c_corr_heat" style="height:620px"></div>
+    </div>
+    <div class="grid three">
+      <div class="card"><div class="card-head"><h3>图表 3 · 冲突密度 vs 热度</h3><span class="static-badge live">联动</span></div><div class="chart" id="c_conflict_scatter" style="height:330px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 4 · 情节转折密度 vs 热度</h3><span class="static-badge live">联动</span></div><div class="chart" id="c_twist_scatter" style="height:330px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 5 · 大事件频率 vs 热度</h3><span class="static-badge live">联动</span></div><div class="chart" id="c_major_scatter" style="height:330px"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 4：高/低热度组对比 ============ -->
+  <section class="module" id="m4">
+    <h2 class="section-title"><span class="sec-num">04</span>高 / 低热度组对比 <small class="muted">高组=前25%(12部) · 低组=后25%(12部)</small></h2>
+    <div class="grid two">
+      <div class="card"><div class="card-head"><h3>图表 6 · 题材母题占比</h3><span class="unit">高组红 / 低组蓝 · 标注占比差(pp)</span></div><div class="chart" id="c_theme_share" style="height:340px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 7 · 叙事结构占比</h3><span class="unit">线性 / 非线性</span></div><div class="chart" id="c_struct_share" style="height:340px"></div></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><div class="card-head"><h3>图表 8 · 关键数值特征均值对比</h3><span class="unit">高组 vs 低组 · 数值标签</span></div><div class="chart" id="c_num_mean" style="height:380px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 9 · 三维度均值对比</h3><span class="unit">差异标注 +%</span></div><div class="chart" id="c_threedim_mean" style="height:380px"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 5：细粒度信号词排序 ============ -->
+  <section class="module" id="m5">
+    <h2 class="section-title"><span class="sec-num">05</span>细粒度信号词排序 <small class="muted">点击柱子可筛选包含该信号词的剧集</small></h2>
+    <div class="grid three">
+      <div class="card"><div class="card-head"><h3>图表 10 · 情节点类型 &nbsp;<em>pregnant 显著</em></h3></div><div class="chart" id="c_plot_words" style="height:560px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 11 · 冲突信号词 &nbsp;<em>insult 显著</em></h3></div><div class="chart" id="c_conflict_words" style="height:560px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 12 · 大事件信号词 &nbsp;<em>reveal 显著负向</em></h3></div><div class="chart" id="c_major_words" style="height:560px"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 6：冲突密度非线性与题材分布 ============ -->
+  <section class="module" id="m6">
+    <h2 class="section-title"><span class="sec-num">06</span>冲突密度非线性与题材分布</h2>
+    <div class="grid three">
+      <div class="card"><div class="card-head"><h3>图表 13 · 冲突密度分档热度</h3><span class="unit">低/中/高 · 标注「适度最优」</span></div><div class="chart" id="c_bin_heat" style="height:340px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 14 · 冲突密度按题材</h3><span class="static-badge live">联动</span><span class="unit">箱线图 · 次/分钟</span></div><div class="chart" id="c_conflict_box" style="height:340px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 15 · 题材 × 综合热度</h3><span class="static-badge live">联动</span><span class="unit">箱线图 · 综合传播热度</span></div><div class="chart" id="c_theme_heat_box" style="height:340px"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 7：三维度论点验证 ============ -->
+  <section class="module" id="m7">
+    <h2 class="section-title"><span class="sec-num">07</span>三维度论点验证</h2>
+    <div class="card">
+      <div class="card-head"><h3>三维度相关性排序表</h3></div>
+      <div class="table-scroll"><table class="tbl" id="tbl_threedim"></table></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><div class="card-head"><h3>图表 16 · 三维度高/低组均值</h3><span class="unit">并排柱</span></div><div class="chart" id="c_threedim_bar" style="height:360px"></div></div>
+      <div class="card"><div class="card-head"><h3>图表 17 · 正反例雷达图</h3><span class="static-badge live">联动</span><span class="unit">三指标按 50 部样本 min-max 归一(0–100%)</span></div><div class="chart" id="c_radar" style="height:380px"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 8：剧集明细排序表 ============ -->
+  <section class="module" id="m8">
+    <h2 class="section-title"><span class="sec-num">08</span>剧集明细排序表</h2>
+    <div class="card">
+      <div class="table-toolbar">
+        <span id="tbl-count" class="muted"></span>
+        <span class="hint">点击表头排序 · 点击行联动高亮散点图与雷达图</span>
+      </div>
+      <div class="table-scroll tall"><table class="tbl sortable" id="tbl_main"></table></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 9：数据口径与局限 ============ -->
+  <section class="module" id="m9">
+    <h2 class="section-title"><span class="sec-num">09</span>数据口径与局限</h2>
+    <details class="card footnote">
+      <summary>展开数据口径与局限（可折叠）</summary>
+      <ul>
+        <li>样本 n=50 部 YouTube 热门短剧；有效数值特征样本约 50。</li>
+        <li>46/50 部含全片字幕，4 部仅覆盖前 5 分钟样本。</li>
+        <li>TMDB / IMDb / TVmaze 交叉认证匹配率低，权威匹配多缺失。</li>
+        <li>叙事结构、题材母题、戏剧性需求等定性维度多为启发式判定。</li>
+        <li>Google Trends 12/50 部无数据，综合热度中的 Google Trends 分量按剩余权重比例放大后归一。</li>
+        <li>信号词词库为启发式词库，中英混合内容做繁简归一与双语双词库匹配。</li>
+        <li>「筛选 · 时空分布 · 剧集档案」的频道 / 语言 / 发布时间 / 点赞 / 评论等元数据来自 youtube_short_dramas.csv（点赞数、评论数为 YouTube 当前快照）。</li>
+        <li class="strong">相关性为观测性统计，非因果结论。</li>
+      </ul>
+    </details>
+  </section>
+
+</main>
+
+<!-- 短剧详情弹窗 -->
+<div class="modal-backdrop" id="detail-modal" hidden>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+    <div class="modal-header">
+      <h3 id="detail-title">短剧详情</h3>
+      <button class="modal-close" id="detail-close" aria-label="关闭">&times;</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span>当前数据来源：<b id="ds-src">加载中…</b></span>
+  <span class="dot">·</span>
+  <span>观测性统计，非因果结论</span>
+</footer>
+
+<script src="data.js"></script>
+<script src="charts.js"></script>
+</body>
+</html>
