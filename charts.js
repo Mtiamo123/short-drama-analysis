@@ -124,8 +124,8 @@ function renderKPIs2() {
   const sigText = sig.map(x => x.term).join(' · ');
   const sigP = sig.map(x => x.term + ' p=' + fmt(x.p, 3)).join('　');
   const cards = [
-    { label: '最强正相关', value: '情节转折密度 +0.266', sub: 'Spearman ρ，p=0.062', tone: 'pos' },
-    { label: '三个稳定正相关维度', value: '强钩子 / 侮辱冲突 / 适度冲突', sub: 'ρ≈+0.16~0.17', tone: 'pos' },
+    { label: '最强正相关', value: '情感价值感知 +0.356', sub: 'Spearman ρ，p=0.011 ★ 显著', tone: 'pos' },
+    { label: '次强正相关', value: '情感共同体构建 +0.286', sub: 'Spearman ρ，p=0.044 ★ 显著', tone: 'pos' },
     { label: '显著项（p<0.05）', value: sigText || '—', sub: sigP || 'insult · pregnant · reveal(负)', tone: 'neu' },
     { label: '冲突密度分档排序', value: '中 33.4 > 高 32.2 > 低 27.8', sub: '支撑「适度最优」', tone: 'pos' },
   ];
@@ -572,6 +572,40 @@ function renderThreeDimBar() {
   });
 }
 
+/* 图表：情感基调主标签分布（按高/中/低热度分组堆叠，全样本基线） */
+function renderToneDist() {
+  const c = chart('c_tone_dist'); if (!c) return;
+  const counts = {};
+  S.dramas.forEach(d => {
+    const t = d.tonePrimary || '其他';
+    counts[t] = counts[t] || { 高: 0, 中: 0, 低: 0 };
+    counts[t][d._heatGroup] = (counts[t][d._heatGroup] || 0) + 1;
+  });
+  const labels = Object.keys(counts).sort((a, b) => {
+    const ta = counts[a].高 + counts[a].中 + counts[a].低;
+    const tb = counts[b].高 + counts[b].中 + counts[b].低;
+    return tb - ta;
+  });
+  c.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => {
+      const t = labels[p[0].dataIndex];
+      const cc = counts[t];
+      const tot = cc.高 + cc.中 + cc.低;
+      return t + '（共 ' + tot + ' 部）<br/>高热度组 ' + cc.高 + ' · 中热度组 ' + cc.中 + ' · 低热度组 ' + cc.低 +
+        '<br/><i>高/低组各 12 部，中组 26 部</i>';
+    }},
+    legend: { data: ['高热度', '中热度', '低热度'], top: 0 },
+    grid: { left: 46, right: 20, top: 36, bottom: 30 },
+    xAxis: { type: 'category', data: labels },
+    yAxis: { type: 'value', name: '剧集数', minInterval: 1 },
+    series: [
+      { name: '高热度', type: 'bar', stack: 't', barMaxWidth: 54, data: labels.map(t => counts[t].高), itemStyle: { color: COLORS.pos } },
+      { name: '中热度', type: 'bar', stack: 't', barMaxWidth: 54, data: labels.map(t => counts[t].中), itemStyle: { color: COLORS.neutral } },
+      { name: '低热度', type: 'bar', stack: 't', barMaxWidth: 54, data: labels.map(t => counts[t].低), itemStyle: { color: COLORS.neg } },
+    ],
+  });
+}
+
 /* 图表 17：正反例雷达图（min-max 归一 0–100） */
 function radarRanges() {
   const keys = ['conflictDensity', 'hookDensity', 'insultDensity'];
@@ -691,6 +725,8 @@ function selectDrama(vid, from) {
   renderScatter('c_conflict_scatter', 'conflictDensity', '冲突密度(次/分钟)', 2);
   renderScatter('c_twist_scatter', 'twistDensity', '情节转折密度(次/分钟)', 2);
   renderScatter('c_major_scatter', 'majorFreq', '大事件频率(次/10分钟)', 2);
+  renderScatter('c_community_scatter', 'communityScore', '情感共同体构建评分(0-100)', 0);
+  renderScatter('c_value_scatter', 'valueScore', '情感价值感知评分(0-100)', 0);
   renderRadar();
   renderTable();
   const row = document.querySelector('#tbl_main tbody tr.selected');
@@ -988,6 +1024,7 @@ function renderAllStatic() {
   renderBinHeat();
   renderThreeDimTable();
   renderThreeDimBar();
+  renderToneDist();
 }
 function renderLinkedData() {
   renderKPIs();
@@ -995,6 +1032,8 @@ function renderLinkedData() {
   renderScatter('c_conflict_scatter', 'conflictDensity', '冲突密度(次/分钟)', 2);
   renderScatter('c_twist_scatter', 'twistDensity', '情节转折密度(次/分钟)', 2);
   renderScatter('c_major_scatter', 'majorFreq', '大事件频率(次/10分钟)', 2);
+  renderScatter('c_community_scatter', 'communityScore', '情感共同体构建评分(0-100)', 0);
+  renderScatter('c_value_scatter', 'valueScore', '情感价值感知评分(0-100)', 0);
   renderBoxplot('c_conflict_box', 'theme', 'conflictDensity', '次/分钟', 2);
   renderBoxplot('c_theme_heat_box', 'theme', 'heat', '综合传播热度', 1);
   renderRadar();

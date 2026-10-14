@@ -121,7 +121,7 @@
   <section class="module" id="m3">
     <h2 class="section-title"><span class="sec-num">03</span>数值特征相关性</h2>
     <div class="card">
-      <div class="card-head"><h3>图表 1 · 13 项数值特征与综合热度 Spearman ρ</h3><span class="unit">按 |ρ| 降序 · 红=正相关 · 蓝=负相关</span></div>
+      <div class="card-head"><h3>图表 1 · 15 项数值特征与综合热度 Spearman ρ</h3><span class="unit">按 |ρ| 降序 · 红=正相关 · 蓝=负相关</span></div>
       <div class="chart" id="c_feat_rho" style="height:520px"></div>
     </div>
     <div class="card">
@@ -181,9 +181,23 @@
     </div>
   </section>
 
-  <!-- ============ 模块 8：剧集明细排序表 ============ -->
+  <!-- ============ 模块 8：情感叙事维度（新增） ============ -->
   <section class="module" id="m8">
-    <h2 class="section-title"><span class="sec-num">08</span>剧集明细排序表</h2>
+    <h2 class="section-title"><span class="sec-num">08</span>情感叙事维度 <small class="muted">新增：情感基调 · 情感共同体构建 · 情感价值感知</small></h2>
+    <p class="module-sub">在原有 8 维编剧特征之外新增 3 个情感叙事维度（已剔除参考价值较低的<b>享乐动机 / 品牌与IP效应 / 价值观表达</b>）。<b>情感价值感知</b>（ρ=0.356，p=0.011）与<b>情感共同体构建</b>（ρ=0.286，p=0.044）是 50 部样本中<b>仅有的两个显著预测因子</b>（p&lt;0.05），均呈正向：情感评分越高，综合传播热度越高。</p>
+    <div class="card">
+      <div class="card-head"><h3>情感基调主标签分布</h3><span class="unit">按高/中/低热度分组堆叠 · 全样本基线 n=50</span></div>
+      <div class="chart" id="c_tone_dist" style="height:350px"></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><div class="card-head"><h3>情感共同体构建评分 vs 综合热度</h3><span class="static-badge live">联动</span><span class="unit">ρ=0.286 · p=0.044 · 正向显著</span></div><div class="chart" id="c_community_scatter" style="height:340px"></div></div>
+      <div class="card"><div class="card-head"><h3>情感价值感知评分 vs 综合热度</h3><span class="static-badge live">联动</span><span class="unit">ρ=0.356 · p=0.011 · 正向显著</span></div><div class="chart" id="c_value_scatter" style="height:340px"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 9：剧集明细排序表 ============ -->
+  <section class="module" id="m9">
+    <h2 class="section-title"><span class="sec-num">09</span>剧集明细排序表</h2>
     <div class="card">
       <div class="table-toolbar">
         <span id="tbl-count" class="muted"></span>
@@ -193,9 +207,9 @@
     </div>
   </section>
 
-  <!-- ============ 模块 9：数据口径与局限 ============ -->
-  <section class="module" id="m9">
-    <h2 class="section-title"><span class="sec-num">09</span>数据口径与局限</h2>
+  <!-- ============ 模块 10：数据口径与局限 ============ -->
+  <section class="module" id="m10">
+    <h2 class="section-title"><span class="sec-num">10</span>数据口径与局限</h2>
     <details class="card footnote">
       <summary>展开数据口径与局限（可折叠）</summary>
       <ul>
