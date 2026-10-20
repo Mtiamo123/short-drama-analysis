@@ -160,7 +160,7 @@ function renderActiveFilters() {
   if (fsEl) {
     fsEl.innerHTML = '<span class="fs-count">当前显示 <b>' + S.filtered.length + '</b> / ' + S.dramas.length + ' 部短剧</span>' +
       '<span class="fs-divider"></span>' +
-      '<span class="fs-hint">变更筛选后，趋势图 · 语言对比 · 档案表与 <b>⚡ 联动</b> 散点图 · 箱线图 · 雷达图 · 明细表即时刷新</span>';
+      '<span class="fs-hint">变更筛选后，趋势图 · 语言对比 · 档案表与 <b>⚡ 联动</b> 散点图 · 箱线图 · 明细表即时刷新</span>';
   }
 }
 
@@ -727,7 +727,6 @@ function selectDrama(vid, from) {
   renderScatter('c_major_scatter', 'majorFreq', '大事件频率(次/10分钟)', 2);
   renderScatter('c_community_scatter', 'communityScore', '情感共同体构建评分(0-100)', 0);
   renderScatter('c_value_scatter', 'valueScore', '情感价值感知评分(0-100)', 0);
-  renderRadar();
   renderTable();
   const row = document.querySelector('#tbl_main tbody tr.selected');
   if (row && row.scrollIntoView) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -1022,8 +1021,6 @@ function renderAllStatic() {
   renderWordChart('c_conflict_words', S.data.conflictWordCorr, 'insult', 20);
   renderWordChart('c_major_words', S.data.majorEventCorr, 'reveal', 20);
   renderBinHeat();
-  renderThreeDimTable();
-  renderThreeDimBar();
   renderToneDist();
 }
 function renderLinkedData() {
@@ -1036,7 +1033,6 @@ function renderLinkedData() {
   renderScatter('c_value_scatter', 'valueScore', '情感价值感知评分(0-100)', 0);
   renderBoxplot('c_conflict_box', 'theme', 'conflictDensity', '次/分钟', 2);
   renderBoxplot('c_theme_heat_box', 'theme', 'heat', '综合传播热度', 1);
-  renderRadar();
   renderTable();
   renderArchiveModule();
 }
@@ -1044,8 +1040,10 @@ function renderLinkedData() {
 /* ---------------- nav ---------------- */
 function buildNav() {
   const items = [
-    ['m1', '筛选与档案'], ['m2', '核心结论'], ['m3', '特征相关性'], ['m4', '高/低组对比'],
-    ['m5', '信号词'], ['m6', '冲突密度'], ['m7', '三维度'], ['m8', '明细表'], ['m9', '口径与局限'],
+    ['m1', '筛选与档案'], ['m2', '核心结论'], ['m3', '研究设计'], ['m4', '特征重要性'],
+    ['m5', '特征相关性'], ['m6', '高/低组对比'], ['m7', '信号词'], ['m8', '冲突密度'],
+    ['m9', '三维度'], ['m10', '情感叙事'], ['m11', '评论词云'], ['m12', '语义空间'],
+    ['m13', '明细表'], ['m14', '口径与局限'],
   ];
   document.getElementById('nav').innerHTML = items.map(it => '<a href="#' + it[0] + '">' + it[1] + '</a>').join('');
 }
@@ -1080,7 +1078,6 @@ async function init() {
   renderKPIs();
   renderKPIs2();
   renderActiveFilters();
-  renderThreeDimTable();
   renderTable();
   renderArchiveTable();
 

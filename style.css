@@ -320,3 +320,61 @@ small.muted { font-size: 12px; }
 .table-scroll::-webkit-scrollbar-track { background: #f1f3f8; border-radius: 20px; }
 .table-scroll::-webkit-scrollbar-thumb { background: #ccd5e4; border-radius: 20px; }
 .table-scroll::-webkit-scrollbar-thumb:hover { background: #aeb9cd; }
+
+/* ---------- v1.7 新增组件 ---------- */
+/* callout 提示块 */
+.callout { border-radius: var(--radius); padding: 16px 18px; border: 1px solid; }
+.callout__title { font-weight: 800; font-size: 13px; margin-bottom: 6px; letter-spacing: .2px; }
+.callout p { margin: 0; font-size: 13px; line-height: 1.75; }
+.callout--warn { background: #fdf6ec; border-color: #f0dcc0; }
+.callout--warn .callout__title { color: #a06d20; }
+.callout--warn p { color: #5c4a24; }
+.callout--info { background: #eef4ff; border-color: #d4e3fb; }
+.callout--info .callout__title { color: var(--neutral-deep); }
+.callout--info p { color: #33405c; }
+
+/* 可点击放大图片 */
+.fig {
+  margin: 0; position: relative; cursor: zoom-in;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  overflow: hidden; background: #fff;
+}
+.fig img { display: block; width: 100%; height: auto; transition: opacity .18s, transform .3s; }
+.fig:hover img { opacity: .96; transform: scale(1.01); }
+.fig::after {
+  content: "🔍 点击放大"; position: absolute; right: 10px; bottom: 10px;
+  font-size: 11.5px; font-weight: 700; color: #fff;
+  background: rgba(20, 26, 40, .62); backdrop-filter: blur(3px);
+  padding: 4px 10px; border-radius: 20px; opacity: 0; transition: opacity .18s; pointer-events: none;
+}
+.fig:hover::after { opacity: 1; }
+
+/* 图片灯箱 */
+.lightbox {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(12, 16, 26, .88); backdrop-filter: blur(4px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 4vh 5vw; animation: lbIn .18s ease;
+}
+.lightbox[hidden] { display: none; }
+@keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
+.lightbox img {
+  max-width: 100%; max-height: 82vh; border-radius: 10px;
+  background: #fff; box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+}
+.lightbox__caption { color: #cdd5e2; font-size: 13px; margin-top: 14px; max-width: 900px; text-align: center; line-height: 1.6; }
+.lightbox__close {
+  position: absolute; top: 18px; right: 22px; width: 40px; height: 40px;
+  border: none; border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff;
+  font-size: 24px; line-height: 1; cursor: pointer; transition: background .15s;
+}
+.lightbox__close:hover { background: rgba(255, 255, 255, .24); }
+
+/* 分段切换（t-SNE / PCA） */
+.seg { display: inline-flex; gap: 2px; background: #edf0f6; border-radius: 10px; padding: 3px; }
+.seg button {
+  border: none; background: transparent; padding: 6px 15px; font-size: 12.5px; font-weight: 700;
+  color: #56617a; border-radius: 8px; cursor: pointer; transition: all .15s; font-family: var(--sans);
+}
+.seg button:hover { color: var(--neutral-deep); }
+.seg button.active { background: #fff; color: var(--neutral-deep); box-shadow: 0 2px 7px rgba(28, 35, 51, .14); }

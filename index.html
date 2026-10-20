@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>YouTube 热门短剧编剧特征 × 传播热度 · 交互式可视化</title>
+<title>短剧编剧特征 × 传播热度 · 交互式可视化（v1.7）</title>
 <link rel="stylesheet" href="style.css" />
 <script src="echarts.min.js"></script>
 <script>
@@ -34,7 +34,7 @@
   <div class="topbar-inner">
     <div class="brand">
       <span class="brand-title">短剧编剧特征 × 传播热度</span>
-      <span class="brand-sub">观测性相关性分析 · n=50 · 信号词为启发式词库</span>
+      <span class="brand-sub">观测性相关性分析 · n=50 · 短剧分析报告 v1.7</span>
     </div>
     <nav class="nav" id="nav"></nav>
   </div>
@@ -42,10 +42,10 @@
 
 <main class="wrap">
 
-  <!-- ============ 模块 1：筛选 · 时空分布 · 剧集档案 ============ -->
+  <!-- ============ 模块 01：筛选 · 时空分布 · 剧集档案 ============ -->
   <section class="module" id="m1">
     <h2 class="section-title"><span class="sec-num">01</span>筛选 · 时空分布 · 剧集档案</h2>
-    <p class="module-sub">用一个筛选框驱动全部图表：按 <b>发布时间</b>、<b>语言</b>、<b>热度分组</b>、<b>剧名</b> 筛选后，本页趋势图、语言对比、档案明细表以及后续的散点图 / 箱线图 / 雷达图 / 排序表会<b>实时联动</b>；第 02–07 模块为 n=50 全样本统计基线，不随筛选变化。</p>
+    <p class="module-sub">用一个筛选框驱动全部图表：按 <b>发布时间</b>、<b>语言</b>、<b>热度分组</b>、<b>剧名</b> 筛选后，本页趋势图、语言对比、档案明细表以及各模块中带 <span class="static-badge live">联动</span> 标记的散点图 / 箱线图 / 明细表会<b>实时联动</b>；其余图多为 n=50 全样本统计基线，不随筛选变化。</p>
 
     <div class="filters card">
       <div class="filter-status" id="filter-status"></div>
@@ -101,7 +101,7 @@
     </div>
   </section>
 
-  <!-- ============ 模块 2：核心结论数字卡与排序图 ============ -->
+  <!-- ============ 模块 02：核心结论数字卡与排序图 ============ -->
   <section class="module" id="m2">
     <h2 class="section-title"><span class="sec-num">02</span>核心结论</h2>
     <div class="kpis" id="kpis2"></div>
@@ -117,9 +117,63 @@
     </div>
   </section>
 
-  <!-- ============ 模块 3：数值特征相关性 ============ -->
+  <!-- ============ 模块 03：研究设计与稳健性 ============ -->
   <section class="module" id="m3">
-    <h2 class="section-title"><span class="sec-num">03</span>数值特征相关性</h2>
+    <h2 class="section-title"><span class="sec-num">03</span>研究设计与稳健性检验</h2>
+    <p class="module-sub">本页所有相关分析均为<b>观测性统计</b>。综合传播热度由 0.40×播放量(对数标准化) + 0.20×点赞率 + 0.20×评论率 + 0.20×Trends平均热度 合成。下面先交代研究口径，再验证综合热度指标与「有效信号」的可靠性。</p>
+
+    <div class="card callout callout--warn">
+      <div class="callout__title">研究口径（探索性研究声明）</div>
+      <p>本研究为<b>探索性研究（n=50）</b>，绝大多数编剧特征<b>未达统计显著（p&gt;0.05）</b>；报告结论反映样本内的<b>方向性趋势</b>，不可作为严格因果推断。仅 <b>insult（侮辱）、pregnant（生子）、情感价值感知 / 情感共同体构建评分、reveal（负向）</b> 等少数特征达到 p&lt;0.05 或边缘显著（0.05≤p&lt;0.10），详见下方「有效分析」。</p>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>综合传播热度的稳健性检验</h3><span class="unit">三种独立排名 · 两两 Spearman ρ</span></div>
+        <div class="chart" id="c_robust" style="height:300px"></div>
+        <p class="unit" style="margin:8px 0 0">复合加权与客观熵值法一致性最高（ρ=0.817），三种排名两两显著正相关（ρ 0.54～0.82，p 均 &lt;0.001）→ 综合指标<b>稳健、无需更换</b>。</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>有效分析：p&lt;0.10 的显著信号</h3><span class="unit">实色=显著(p&lt;0.05) · 淡色=边缘显著</span></div>
+        <div class="chart" id="c_sig_full" style="height:300px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 04：特征重要性与过拟合 ============ -->
+  <section class="module" id="m4">
+    <h2 class="section-title"><span class="sec-num">04</span>特征重要性 · 随机森林 vs XGBoost</h2>
+    <p class="module-sub">为评估各编剧特征对传播热度的解释力，引入<b>随机森林</b>与<b>XGBoost</b>（两者均加 max_depth=3、min_samples_leaf=2 等防过拟合约束）提取特征重要性并做交叉验证。</p>
+
+    <div class="card callout callout--warn">
+      <div class="callout__title">50 样本下两模型均严重过拟合</div>
+      <p>随机森林：训练集 R²=0.647，5 折 CV R²=<b>-0.240</b>；XGBoost：训练集 R²≈1.000，5 折 CV R²=<b>-0.327</b>。故特征重要性<b>仅作方向性参考、不作预测结论</b>。值得注意的是，<b>「情感价值感知评分」</b> 在两个模型中一致被列为<b>最重要特征</b>，与相关性结论相互呼应。</p>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>特征重要性对比（Top 10）</h3><span class="unit">随机森林 vs XGBoost · 归一化重要性</span></div>
+        <div class="chart" id="c_rfxgb" style="height:430px"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>模型得分对比</h3></div>
+        <div class="table-scroll tall">
+          <table class="tbl">
+            <thead><tr><th>模型</th><th>训练集 R²</th><th>OOB R²</th><th>5折CV R²均值</th><th>CV R²标准差</th></tr></thead>
+            <tbody>
+              <tr><td class="name">随机森林</td><td class="num">0.647</td><td class="num">-0.040</td><td class="num" style="color:#e6533c;font-weight:700">-0.240</td><td class="num">0.306</td></tr>
+              <tr><td class="name">XGBoost</td><td class="num">1.000</td><td class="num">—</td><td class="num" style="color:#e6533c;font-weight:700">-0.327</td><td class="num">0.304</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="unit" style="margin:10px 0 0">训练集 R² 远高于交叉验证 R²（且 CV 为负），是典型的<b>过拟合</b>信号：模型「记住」了样本内的个别高值，却无法泛化到新样本。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 模块 05：数值特征相关性 ============ -->
+  <section class="module" id="m5">
+    <h2 class="section-title"><span class="sec-num">05</span>数值特征相关性</h2>
     <div class="card">
       <div class="card-head"><h3>图表 1 · 15 项数值特征与综合热度 Spearman ρ</h3><span class="unit">按 |ρ| 降序 · 红=正相关 · 蓝=负相关</span></div>
       <div class="chart" id="c_feat_rho" style="height:520px"></div>
@@ -135,9 +189,9 @@
     </div>
   </section>
 
-  <!-- ============ 模块 4：高/低热度组对比 ============ -->
-  <section class="module" id="m4">
-    <h2 class="section-title"><span class="sec-num">04</span>高 / 低热度组对比 <small class="muted">高组=前25%(12部) · 低组=后25%(12部)</small></h2>
+  <!-- ============ 模块 06：高/低热度组对比 ============ -->
+  <section class="module" id="m6">
+    <h2 class="section-title"><span class="sec-num">06</span>高 / 低热度组对比 <small class="muted">高组=前25%(12部) · 低组=后25%(12部)</small></h2>
     <div class="grid two">
       <div class="card"><div class="card-head"><h3>图表 6 · 题材母题占比</h3><span class="unit">高组红 / 低组蓝 · 标注占比差(pp)</span></div><div class="chart" id="c_theme_share" style="height:340px"></div></div>
       <div class="card"><div class="card-head"><h3>图表 7 · 叙事结构占比</h3><span class="unit">线性 / 非线性</span></div><div class="chart" id="c_struct_share" style="height:340px"></div></div>
@@ -148,9 +202,9 @@
     </div>
   </section>
 
-  <!-- ============ 模块 5：细粒度信号词排序 ============ -->
-  <section class="module" id="m5">
-    <h2 class="section-title"><span class="sec-num">05</span>细粒度信号词排序 <small class="muted">点击柱子可筛选包含该信号词的剧集</small></h2>
+  <!-- ============ 模块 07：细粒度信号词排序 ============ -->
+  <section class="module" id="m7">
+    <h2 class="section-title"><span class="sec-num">07</span>细粒度信号词排序 <small class="muted">点击柱子可筛选包含该信号词的剧集</small></h2>
     <div class="grid three">
       <div class="card"><div class="card-head"><h3>图表 10 · 情节点类型 &nbsp;<em>pregnant 显著</em></h3></div><div class="chart" id="c_plot_words" style="height:560px"></div></div>
       <div class="card"><div class="card-head"><h3>图表 11 · 冲突信号词 &nbsp;<em>insult 显著</em></h3></div><div class="chart" id="c_conflict_words" style="height:560px"></div></div>
@@ -158,9 +212,9 @@
     </div>
   </section>
 
-  <!-- ============ 模块 6：冲突密度非线性与题材分布 ============ -->
-  <section class="module" id="m6">
-    <h2 class="section-title"><span class="sec-num">06</span>冲突密度非线性与题材分布</h2>
+  <!-- ============ 模块 08：冲突密度非线性与题材分布 ============ -->
+  <section class="module" id="m8">
+    <h2 class="section-title"><span class="sec-num">08</span>冲突密度非线性与题材分布</h2>
     <div class="grid three">
       <div class="card"><div class="card-head"><h3>图表 13 · 冲突密度分档热度</h3><span class="unit">低/中/高 · 标注「适度最优」</span></div><div class="chart" id="c_bin_heat" style="height:340px"></div></div>
       <div class="card"><div class="card-head"><h3>图表 14 · 冲突密度按题材</h3><span class="static-badge live">联动</span><span class="unit">箱线图 · 次/分钟</span></div><div class="chart" id="c_conflict_box" style="height:340px"></div></div>
@@ -168,22 +222,31 @@
     </div>
   </section>
 
-  <!-- ============ 模块 7：三维度论点验证 ============ -->
-  <section class="module" id="m7">
-    <h2 class="section-title"><span class="sec-num">07</span>三维度论点验证</h2>
-    <div class="card">
-      <div class="card-head"><h3>三维度相关性排序表</h3></div>
-      <div class="table-scroll"><table class="tbl" id="tbl_threedim"></table></div>
-    </div>
+  <!-- ============ 模块 09：三维度论点验证（互斥维度） ============ -->
+  <section class="module" id="m9">
+    <h2 class="section-title"><span class="sec-num">09</span>三维度论点验证 <small class="muted">互斥维度修正</small></h2>
+    <p class="module-sub">初版以「冲突密度 / 强钩子 / 侮辱冲突」绘制雷达图，但三者之间存在<b>父子集与语义重叠</b>（冲突密度 ⊇ 侮辱冲突密度）。现按<b>互斥规则</b>重新拆分为三个无重叠维度：<b>A 情感关系转折钩子</b>、<b>B 负面言语冲突</b>、<b>C 悬疑动作冲突</b>，以正例 <b>R2 / R7 / R22</b>（高热度）与反例 <b>R18 / R42 / R45</b>（低热度）做分组柱状图与平行坐标对比。</p>
+
     <div class="grid two">
-      <div class="card"><div class="card-head"><h3>图表 16 · 三维度高/低组均值</h3><span class="unit">并排柱</span></div><div class="chart" id="c_threedim_bar" style="height:360px"></div></div>
-      <div class="card"><div class="card-head"><h3>图表 17 · 正反例雷达图</h3><span class="static-badge live">联动</span><span class="unit">三指标按 50 部样本 min-max 归一(0–100%)</span></div><div class="chart" id="c_radar" style="height:380px"></div></div>
+      <div class="card">
+        <div class="card-head"><h3>正 / 反例分组对比（互斥三维度）</h3><span class="unit">红=高热度正例 · 蓝=低热度反例</span></div>
+        <div class="chart" id="c_valid_bar" style="height:380px"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>平行坐标（互斥三维度）</h3><span class="unit">红线=正例 · 蓝线=反例</span></div>
+        <div class="chart" id="c_valid_parallel" style="height:380px"></div>
+      </div>
+    </div>
+
+    <div class="card callout callout--info">
+      <div class="callout__title">维度逻辑说明</div>
+      <p>三个维度相互独立、不含包含关系：<b>A</b> 关注情感关系的转折 / 钩子密度，<b>B</b> 关注侮辱、谎言、揭穿等<b>负面言语冲突</b>，<b>C</b> 关注<b>悬疑与动作</b>类冲突。高热度正例（R2 / R7 / R22）在三轴上普遍显著高于低热度反例（R18 / R42 / R45），后者几乎在三轴趋近 0——即高热度剧更「冲突密集、钩子密集」，低热度剧相对平淡（方向性趋势，n=50 探索性结论）。</p>
     </div>
   </section>
 
-  <!-- ============ 模块 8：情感叙事维度（新增） ============ -->
-  <section class="module" id="m8">
-    <h2 class="section-title"><span class="sec-num">08</span>情感叙事维度 <small class="muted">新增：情感基调 · 情感共同体构建 · 情感价值感知</small></h2>
+  <!-- ============ 模块 10：情感叙事维度（新增） ============ -->
+  <section class="module" id="m10">
+    <h2 class="section-title"><span class="sec-num">10</span>情感叙事维度 <small class="muted">新增：情感基调 · 情感共同体构建 · 情感价值感知</small></h2>
     <p class="module-sub">在原有 8 维编剧特征之外新增 3 个情感叙事维度（已剔除参考价值较低的<b>享乐动机 / 品牌与IP效应 / 价值观表达</b>）。<b>情感价值感知</b>（ρ=0.356，p=0.011）与<b>情感共同体构建</b>（ρ=0.286，p=0.044）是 50 部样本中<b>仅有的两个显著预测因子</b>（p&lt;0.05），均呈正向：情感评分越高，综合传播热度越高。</p>
     <div class="card">
       <div class="card-head"><h3>情感基调主标签分布</h3><span class="unit">按高/中/低热度分组堆叠 · 全样本基线 n=50</span></div>
@@ -195,21 +258,89 @@
     </div>
   </section>
 
-  <!-- ============ 模块 9：剧集明细排序表 ============ -->
-  <section class="module" id="m9">
-    <h2 class="section-title"><span class="sec-num">09</span>剧集明细排序表</h2>
+  <!-- ============ 模块 11：受众评论词云（质性佐证） ============ -->
+  <section class="module" id="m11">
+    <h2 class="section-title"><span class="sec-num">11</span>受众评论词云 <small class="muted">质性佐证</small></h2>
+    <p class="module-sub">按综合传播热度降序取<b>前 12 名（热播组，评论 2,303 条）</b>与<b>后 12 名（冷剧组，评论 696 条）</b>，统一清洗（转小写、去标点/表情/停用词、正则 + jieba 分词）后统计词频，从「受众视角」对数值结论做定性佐证。两组评论量相差约 3.3 倍，故同时以「每万词频次」与「热/冷比」呈现以消除样本量不均。</p>
+
+    <div class="card">
+      <div class="card-head"><h3>热播组 vs 冷剧组 · 并排词云</h3><span class="unit">暖色=热播组 · 冷色=冷剧组 · 点击放大</span></div>
+      <figure class="fig" data-lightbox>
+        <img src="img/wordcloud_comparison.png" alt="热播组（暖色）vs 冷剧组（冷色）评论词云并排对比" />
+      </figure>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>热播组词云</h3><span class="unit">暖色调 · 点击放大</span></div>
+        <figure class="fig" data-lightbox><img src="img/wordcloud_hot_dramas.png" alt="热播组评论词云（暖色调）" /></figure>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>冷剧组词云</h3><span class="unit">冷色调 · 点击放大</span></div>
+        <figure class="fig" data-lightbox><img src="img/wordcloud_cold_dramas.png" alt="冷剧组评论词云（冷色调）" /></figure>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>编剧 / 剧情相关关键词 · 组间对比</h3><span class="unit">每万词频次 · 热/冷比 &gt;1.2 标红、&lt;0.5 标蓝</span></div>
+      <div class="table-scroll"><table class="tbl" id="tbl_keywords"></table></div>
+    </div>
+
+    <div class="card callout callout--info">
+      <div class="callout__title">定性解读（描述性趋势，非显著结论）</div>
+      <p><b>热播组</b>更多提及「剧情推进与爽点」：剧情/故事（热/冷比 1.24）、结局（1.42）、喜爱/发糖（1.49）均高于冷组；<b>反转（twist）在冷剧组出现频次为 0</b>；演员/演技达 1.79，为组间差异最明显项。<b>冷剧组</b>更多聚焦「人物与人设」：角色/人物每万词热/冷比仅 0.21（冷组相对提及率约为热组 4.8 倍）、无聊 0.12、逻辑 0.72。这与数值层面「情节转折密度 ρ=+0.266、强钩子 + 侮辱冲突」的样本内正向信号方向一致，属探索性发现，不作因果推断。</p>
+    </div>
+  </section>
+
+  <!-- ============ 模块 12：高维语义空间初探 ============ -->
+  <section class="module" id="m12">
+    <h2 class="section-title"><span class="sec-num">12</span>高维语义空间初探 <small class="muted">表征学习探索</small></h2>
+    <p class="module-sub">在浅层词频特征之上，尝试引入<b>高维语义表征</b>：用 <b>all-MiniLM-L6-v2</b> 将 50 部短剧文本编码为 384 维向量，再经 <b>t-SNE / PCA</b> 降至二维，观察高热度剧是否在语义空间形成聚集。</p>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>50 部短剧 · 二维投影散点</h3>
+        <span class="seg" id="latent-seg">
+          <button data-latent-mode="tsne" class="active">t-SNE</button>
+          <button data-latent-mode="pca">PCA</button>
+        </span>
+      </div>
+      <div class="chart" id="c_latent" style="height:520px"></div>
+      <p class="unit" style="margin:8px 0 0">颜色=综合传播热度（蓝冷 → 红热）· 悬停查看剧名 / 排名 / 热度 · 按钮可切换 t-SNE / PCA 投影</p>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>t-SNE 投影</h3><span class="unit">点击放大</span></div>
+        <figure class="fig" data-lightbox><img src="img/latent_space_tsne.png" alt="50 部短剧 all-MiniLM-L6-v2 + t-SNE 二维散点，按综合传播热度着色" /></figure>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>PCA 投影</h3><span class="unit">点击放大</span></div>
+        <figure class="fig" data-lightbox><img src="img/latent_space_pca.png" alt="50 部短剧 all-MiniLM-L6-v2 + PCA 二维散点，按综合传播热度着色" /></figure>
+      </div>
+    </div>
+
+    <div class="card callout callout--warn">
+      <div class="callout__title">结论：通用语义嵌入暂无法稳定区分热度</div>
+      <p>高 / 低热度组重心存在一定分离趋势（组间重心距离 5.01），但<b>组内离散度（高组 15.83、低组 17.48）均明显大于组间距离</b>，未形成清晰聚集簇；综合热度与两个 t-SNE 轴的 Spearman 相关亦不显著（ρ≈0.01 / −0.11，p&gt;0.45）。说明「热度的语义信号」可能藏在更深层、更领域化的结构中，需引入<b>编剧领域知识</b>进一步特征化。</p>
+    </div>
+  </section>
+
+  <!-- ============ 模块 13：剧集明细排序表 ============ -->
+  <section class="module" id="m13">
+    <h2 class="section-title"><span class="sec-num">13</span>剧集明细排序表</h2>
     <div class="card">
       <div class="table-toolbar">
         <span id="tbl-count" class="muted"></span>
-        <span class="hint">点击表头排序 · 点击行联动高亮散点图与雷达图</span>
+        <span class="hint">点击表头排序 · 点击行联动高亮散点图</span>
       </div>
       <div class="table-scroll tall"><table class="tbl sortable" id="tbl_main"></table></div>
     </div>
   </section>
 
-  <!-- ============ 模块 10：数据口径与局限 ============ -->
-  <section class="module" id="m10">
-    <h2 class="section-title"><span class="sec-num">10</span>数据口径与局限</h2>
+  <!-- ============ 模块 14：数据口径与局限 ============ -->
+  <section class="module" id="m14">
+    <h2 class="section-title"><span class="sec-num">14</span>数据口径与局限</h2>
     <details class="card footnote">
       <summary>展开数据口径与局限（可折叠）</summary>
       <ul>
@@ -223,6 +354,11 @@
         <li class="strong">相关性为观测性统计，非因果结论。</li>
       </ul>
     </details>
+
+    <div class="card callout callout--info">
+      <div class="callout__title">未来展望：从浅层词频到高维表征学习</div>
+      <p>本研究现有特征基于<b>浅层词频统计</b>；后续可引入<b>表征学习</b>（BERT 等编码器），将文本映射至高维隐空间寻找更深层语义结构（见「高维语义空间初探」）。此外，特征工程还需引入<b>专业编剧领域知识</b>，通过与编剧的深度访谈，把感性的创作经验转化为可计算的结构化特征。</p>
+    </div>
   </section>
 
 </main>
@@ -238,6 +374,13 @@
   </div>
 </div>
 
+<!-- 图片灯箱 -->
+<div class="lightbox" id="lb-overlay" hidden>
+  <button class="lightbox__close" id="lb-close" aria-label="关闭">&times;</button>
+  <img id="lb-img" alt="" />
+  <div class="lightbox__caption" id="lb-cap"></div>
+</div>
+
 <footer class="footer">
   <span>当前数据来源：<b id="ds-src">加载中…</b></span>
   <span class="dot">·</span>
@@ -246,5 +389,6 @@
 
 <script src="data.js"></script>
 <script src="charts.js"></script>
+<script src="advanced.js"></script>
 </body>
 </html>
