@@ -148,11 +148,15 @@ const dataAdapter = {
         _fetchCSV(DATA_SOURCES.hookEvidence),
       ]);
       this.source = 'real';
-      return buildFromRows(a, b, c, d, e, f2, g, h, i, j);
+      const data = buildFromRows(a, b, c, d, e, f2, g, h, i, j);
+      attachMeta(data.dramas);
+      return data;
     } catch (err) {
       console.warn('[dataAdapter] 回退内置示例数据：', err && err.message ? err.message : err);
       this.source = 'builtin';
-      return BUILTIN_DATA;
+      const data = JSON.parse(JSON.stringify(BUILTIN_DATA));
+      attachMeta(data.dramas);
+      return data;
     }
   }
 };
