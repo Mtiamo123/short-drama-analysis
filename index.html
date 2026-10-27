@@ -261,10 +261,10 @@
   <!-- ============ 模块 11：受众评论词云（质性佐证） ============ -->
   <section class="module" id="m11">
     <h2 class="section-title"><span class="sec-num">11</span>受众评论词云 <small class="muted">质性佐证</small></h2>
-    <p class="module-sub">按综合传播热度降序取<b>前 12 名（热播组，评论 2,303 条）</b>与<b>后 12 名（冷剧组，评论 696 条）</b>，统一清洗（转小写、去标点/表情/停用词、正则 + jieba 分词）后统计词频，从「受众视角」对数值结论做定性佐证。两组评论量相差约 3.3 倍，故同时以「每万词频次」与「热/冷比」呈现以消除样本量不均。</p>
+    <p class="module-sub">按综合传播热度降序取<b>前 12 名（热播组）</b>与<b>后 12 名（冷剧组）</b>的观众评论，先做<b>噪音清洗</b>——删除&lt;3 词的纯情绪短评、含 subscribe / channel / follow / t.me 等引流词的评论、纯表情/符号评论，以及与完全相同文本出现&gt;5 次的水军复制评论——再对<b>编剧/剧情专属词库</b>（plot、story、twist、script、ending、logic、character、boring、drop 等）按 3–5 倍频次赋权，从而凸显「涉及编剧、剧情」的真实反馈，而非 love / good / wow 这类大白话。共剔除 <b>319 条（10.64%）</b>噪音评论：热播组原始 2,303 → 保留 2,140 条；冷剧组原始 696 → 保留 540 条。</p>
 
     <div class="card">
-      <div class="card-head"><h3>热播组 vs 冷剧组 · 并排词云</h3><span class="unit">暖色=热播组 · 冷色=冷剧组 · 点击放大</span></div>
+      <div class="card-head"><h3>热播组 vs 冷剧组 · 并排总词云（编剧词赋权）</h3><span class="unit">暖色=热播组 · 冷色=冷剧组 · 点击放大</span></div>
       <figure class="fig" data-lightbox>
         <img src="img/wordcloud_comparison.png" alt="热播组（暖色）vs 冷剧组（冷色）评论词云并排对比" />
       </figure>
@@ -272,12 +272,29 @@
 
     <div class="grid two">
       <div class="card">
-        <div class="card-head"><h3>热播组词云</h3><span class="unit">暖色调 · 点击放大</span></div>
+        <div class="card-head"><h3>热播组总词云</h3><span class="unit">暖色调 · 编剧词赋权 · 点击放大</span></div>
         <figure class="fig" data-lightbox><img src="img/wordcloud_hot_dramas.png" alt="热播组评论词云（暖色调）" /></figure>
       </div>
       <div class="card">
-        <div class="card-head"><h3>冷剧组词云</h3><span class="unit">冷色调 · 点击放大</span></div>
+        <div class="card-head"><h3>冷剧组总词云</h3><span class="unit">冷色调 · 编剧词赋权 · 点击放大</span></div>
         <figure class="fig" data-lightbox><img src="img/wordcloud_cold_dramas.png" alt="冷剧组评论词云（冷色调）" /></figure>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>编剧 / 剧情专属词云（仅保留编剧·剧情词）</h3><span class="unit">过滤 love / good / wow 等无关词 · 暖=热播组 · 紫=冷剧组</span></div>
+      <figure class="fig" data-lightbox>
+        <img src="img/wordcloud_script_comparison.png" alt="编剧/剧情特征词云并排对比（热播 vs 冷剧）" />
+      </figure>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h3>热播组 · 编剧/剧情词</h3><span class="unit">暖橙色调 · 仅保留剧情·编剧·人物·结局等词</span></div>
+        <figure class="fig" data-lightbox><img src="img/wordcloud_hot_script.png" alt="热播组编剧/剧情专属词云" /></figure>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>冷剧组 · 编剧/剧情词</h3><span class="unit">紫色调 · 仅保留剧情·编剧·人物·结局等词</span></div>
+        <figure class="fig" data-lightbox><img src="img/wordcloud_cold_script.png" alt="冷剧组编剧/剧情专属词云" /></figure>
       </div>
     </div>
 
@@ -286,9 +303,69 @@
       <div class="table-scroll"><table class="tbl" id="tbl_keywords"></table></div>
     </div>
 
+    <div class="card">
+      <div class="card-head"><h3>编剧 / 剧情词汇 Top 20 · 频次对比</h3><span class="unit">清洗后原始频次（未赋权）· 左=热播组 · 右=冷剧组</span></div>
+      <div class="grid two">
+        <div class="table-scroll">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>热播组词汇</th><th>频次</th><th>每万词</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>story</td><td>241</td><td>137.44</td></tr>
+              <tr><td>2</td><td>ending</td><td>62</td><td>35.36</td></tr>
+              <tr><td>3</td><td>character</td><td>39</td><td>22.24</td></tr>
+              <tr><td>4</td><td>plot</td><td>35</td><td>19.96</td></tr>
+              <tr><td>5</td><td>stories</td><td>31</td><td>17.68</td></tr>
+              <tr><td>6</td><td>storyline</td><td>27</td><td>15.40</td></tr>
+              <tr><td>7</td><td>characters</td><td>21</td><td>11.98</td></tr>
+              <tr><td>8</td><td>scene</td><td>20</td><td>11.41</td></tr>
+              <tr><td>9</td><td>twist</td><td>14</td><td>7.98</td></tr>
+              <tr><td>10</td><td>writer</td><td>10</td><td>5.70</td></tr>
+              <tr><td>11</td><td>女主</td><td>10</td><td>5.70</td></tr>
+              <tr><td>12</td><td>written</td><td>7</td><td>3.99</td></tr>
+              <tr><td>13</td><td>unexpected</td><td>6</td><td>3.42</td></tr>
+              <tr><td>14</td><td>cringe</td><td>5</td><td>2.85</td></tr>
+              <tr><td>15</td><td>dialogue</td><td>5</td><td>2.85</td></tr>
+              <tr><td>16</td><td>heroine</td><td>4</td><td>2.28</td></tr>
+              <tr><td>17</td><td>scenes</td><td>4</td><td>2.28</td></tr>
+              <tr><td>18</td><td>script</td><td>4</td><td>2.28</td></tr>
+              <tr><td>19</td><td>writers</td><td>4</td><td>2.28</td></tr>
+              <tr><td>20</td><td>故事</td><td>4</td><td>2.28</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-scroll">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>冷剧组词汇</th><th>频次</th><th>每万词</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>女主</td><td>44</td><td>107.84</td></tr>
+              <tr><td>2</td><td>story</td><td>38</td><td>93.14</td></tr>
+              <tr><td>3</td><td>男主</td><td>17</td><td>41.67</td></tr>
+              <tr><td>4</td><td>character</td><td>6</td><td>14.71</td></tr>
+              <tr><td>5</td><td>ending</td><td>6</td><td>14.71</td></tr>
+              <tr><td>6</td><td>plot</td><td>6</td><td>14.71</td></tr>
+              <tr><td>7</td><td>stories</td><td>4</td><td>9.80</td></tr>
+              <tr><td>8</td><td>人物</td><td>3</td><td>7.35</td></tr>
+              <tr><td>9</td><td>人設</td><td>3</td><td>7.35</td></tr>
+              <tr><td>10</td><td>結局</td><td>3</td><td>7.35</td></tr>
+              <tr><td>11</td><td>hero</td><td>2</td><td>4.90</td></tr>
+              <tr><td>12</td><td>storyline</td><td>2</td><td>4.90</td></tr>
+              <tr><td>13</td><td>writer</td><td>2</td><td>4.90</td></tr>
+              <tr><td>14</td><td>故事</td><td>2</td><td>4.90</td></tr>
+              <tr><td>15</td><td>bored</td><td>1</td><td>2.45</td></tr>
+              <tr><td>16</td><td>boring</td><td>1</td><td>2.45</td></tr>
+              <tr><td>17</td><td>characters</td><td>1</td><td>2.45</td></tr>
+              <tr><td>18</td><td>cringe</td><td>1</td><td>2.45</td></tr>
+              <tr><td>19</td><td>dragging</td><td>1</td><td>2.45</td></tr>
+              <tr><td>20</td><td>heroine</td><td>1</td><td>2.45</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div class="card callout callout--info">
       <div class="callout__title">定性解读（描述性趋势，非显著结论）</div>
-      <p><b>热播组</b>更多提及「剧情推进与爽点」：剧情/故事（热/冷比 1.24）、结局（1.42）、喜爱/发糖（1.49）均高于冷组；<b>反转（twist）在冷剧组出现频次为 0</b>；演员/演技达 1.79，为组间差异最明显项。<b>冷剧组</b>更多聚焦「人物与人设」：角色/人物每万词热/冷比仅 0.21（冷组相对提及率约为热组 4.8 倍）、无聊 0.12、逻辑 0.72。这与数值层面「情节转折密度 ρ=+0.266、强钩子 + 侮辱冲突」的样本内正向信号方向一致，属探索性发现，不作因果推断。</p>
+      <p><b>热播组</b>观众更频繁使用<b>剧情/结构类</b>词评价：story（241 次）、ending（62）、plot（35）、twist（14）、writer（10），讨论重心落在「情节推进、结局反转与编剧功力」；<b>冷剧组</b>则更多停留在<b>人物/角色</b>层面：女主（44）、男主（17）、character（6），而 story 仅 38 次（约为热播组的 1/6），剧情讨论密度明显偏低。需说明：<b>boring / drop 类弃剧负面词在两组都很少（boring 各 1 次、drop 为 0 次）</b>，不足以支撑「冷剧=无聊弃剧」的表述，故本报告不据此下结论，仅呈现可观察的高频词差异。</p>
     </div>
   </section>
 
