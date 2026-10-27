@@ -114,6 +114,7 @@ function buildFromRows(screenwriting, featureCorr, corrMatrix, highLowMeans, hig
   const hdr = Object.keys(corrMatrix[0] || {}).filter(k => k && k !== '');
   const labels = hdr;
   const matrix = corrMatrix.map(r => labels.map(h => _f(r[h])));
+  attachMeta(dramas);
   return {
     dramas,
     featureCorr: mk(featureCorr, r => ({ feature: r['特征'], field: r['类型'], n: _i(r['有效样本量']),
@@ -152,6 +153,7 @@ const dataAdapter = {
     } catch (err) {
       console.warn('[dataAdapter] 回退内置示例数据：', err && err.message ? err.message : err);
       this.source = 'builtin';
+      attachMeta(BUILTIN_DATA.dramas);
       return BUILTIN_DATA;
     }
   }
